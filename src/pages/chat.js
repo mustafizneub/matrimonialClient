@@ -4,7 +4,13 @@ import one from '../images/1.jpg';
 import two from '../images/2.jpg';
 import three from '../images/3.jpg';
 import four from '../images/5.jpg';
-const chat = () => {
+import { useHistory } from 'react-router-dom';
+const Chat = () => {
+    let history = useHistory()
+    if(localStorage.getItem('user')){
+        console.log('abc')
+        history.push('/signin')
+    }
     return (
         <div class="grid-container">
         <div class="header">
@@ -100,4 +106,4 @@ const chat = () => {
     )
 }
 
-export default chat
+export default Chat

@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import { Link, useHistory } from 'react-router-dom';
 import "./signin.css"
-import {auth} from "../firebase";
 import { toast } from 'react-toastify';
 
 
