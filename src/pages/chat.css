@@ -1,0 +1,147 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  grid-template-rows: 60px calc(100vh - 60px);
+}
+.header {
+  background-color: blue;
+  grid-column: 1/-1;
+
+  display: grid;
+  grid-template-columns: 30% 70%;
+  width: 100%;
+}
+.myself {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background-color: #3591cc;
+}
+.myself img {
+  margin-top: 5px;
+  border-radius: 50%;
+  margin-left: 30%;
+}
+.chat-board {
+  height: 60px;
+  width: 100%;
+  display: flex;
+}
+.chat-left {
+  width: 40%;
+  display: flex;
+  align-items: center;
+}
+.chat-left img {
+  margin-top: 5px;
+  border-radius: 50%;
+  margin-left: 30px;
+}
+
+.chat-left .info {
+  color: whitesmoke;
+  margin-left: 10px;
+}
+.chat-right {
+  width: 60%;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 5vw;
+  align-items: center;
+  color: white;
+}
+.icon {
+  margin: 10px;
+}
+.side-bar {
+  width: 100%;
+  background-color: #e5ddd5;
+}
+.side-bar input {
+  width: 90%;
+  margin-top: 10px;
+  margin-left: 5%;
+  padding: 8px;
+  border-radius: 50px;
+}
+.chat-self {
+  display: flex;
+  margin: 10px 5%;
+}
+.chat-self img {
+  margin-top: 5px;
+  border-radius: 50%;
+}
+.chat-text h3 {
+  cursor: pointer;
+}
+.chat-text {
+  margin-top: 5px;
+  margin-left: 10px;
+}
+.chat {
+  background-color: #f2f7fd;
+  width: 100%;
+  height: calc(100vh - 60px);
+}
+.self-content-right {
+  display: flex;
+  width: 100%;
+  padding: 4px 20px;
+  margin: 10px;
+  border-radius: 50px;
+  justify-content: flex-end;
+}
+.self-content-right img {
+  border-radius: 50%;
+  background-color: slategrey;
+}
+.self-content-right p {
+  margin-top: 5px;
+  margin-left: 10px;
+  color: white;
+}
+.content {
+  display: flex;
+  background-color: slategrey;
+  padding: 4px 20px;
+  margin: 10px;
+  border-radius: 50px;
+}
+.self-content-left {
+  display: flex;
+  background-color: dodgerblue;
+  width: max-content;
+  padding: 4px 20px;
+  margin: 10px;
+  border-radius: 50px;
+}
+.self-content-left img {
+  border-radius: 50%;
+}
+.self-content-left p {
+  margin-top: 5px;
+  margin-right: 10px;
+  color: white;
+}
+.message {
+  width: 100%;
+  height: 64%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.message div {
+  width: 100%;
+}
+.message > div > input {
+  width: 96%;
+  margin: 0px 2%;
+  padding: 10px;
+  border-radius: 50px;
+}
