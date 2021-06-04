@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom';
 import "./signup.css";
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 
 toast.configure()
@@ -10,42 +11,40 @@ const SignupPage = () => {
     const [fname, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [gender, setGender] = useState('');
+    const [confirmPass, setConPass] = useState('');
 
 
     const signup = (e) => {
-        // e.preventDefault();
 
-        // auth.createUserWithEmailAndPassword(email, password)
-        // .then((auth)=>{
-        //     console.log(auth);
-        //     if (auth) {
-        //         history.push('/')
-        //     }
-        // })
-
-        // .catch(error => alert(error.message))
-
-        //FIREBASE REGISTER
-
-        fetch('http://localhost:4000/signup', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                fname, email, gender, password
-            })
-        }).then(res => res.json())
-            .then(user => {
-                if (user.error) {
-                    toast.info(user.error)
-                } else {
-                    toast.success(user.message)
-                    history.push('/signin')
+        if (fname && email && password && confirmPass) {
+            if (password === confirmPass) {
+                let body = {
+                    fname: fname,
+                    email: email,
+                    password: password
                 }
-            })
-            .catch(e => console.log(e))
+                axios.post('/signup', body).then((res) => {
+                    console.log(res)
+                    if (res.data.error) {
+                        toast.info(res.data.error)
+                    } else {
+                        toast.success(res.data.message)
+                        history.push('/signin')
+                    }
+                }).catch((err) => {
+                    toast.info(err)
+                })
+            } else {
+                toast.error('Password does not match', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                });
+            }
+        } else {
+            toast.error("Please fill all fields.", {
+                position: toast.POSITION.BOTTOM_CENTER
+            });
+        }
+
 
     }
 
@@ -62,22 +61,22 @@ const SignupPage = () => {
 
                     <h5>Name</h5>
 
-                    <input type="text" value={fname} onChange={e => setName(e.target.value)} />
+                    <input required type="text" value={fname} onChange={e => setName(e.target.value)} minLength="3" maxLength="15" />
 
                     <h5>E-mail</h5>
 
-                    <input type="text" value={email} onChange={e => setEmail(e.target.value)} />
-                    <h5>Gender</h5>
+                    <input required type="text" value={email} onChange={e => setEmail(e.target.value)} />
+                    {/* <h5>Gender</h5>
                     <select value={gender} onChange={e => setGender(e.target.value)}>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>
-                    </select>
+                    </select> */}
                     <h5>Password</h5>
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input required type="password" value={password} onChange={e => setPassword(e.target.value)} />
 
                     <h5>Confirm Password</h5>
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input required type="password" value={confirmPass} onChange={e => setConPass(e.target.value)} />
 
                     <button onClick={() => signup()} className="login__signInButton">Sign Up</button>
 

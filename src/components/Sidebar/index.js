@@ -1,36 +1,61 @@
-import React from 'react'
-import { CloseIcon, Icon, SidebarContainer,SidebarMenu, SidebarLink, SidebarRoute, SidebarWrapper, SideBtnWrap } from './SidebarElements';
+import React, { useState } from 'react'
+import { toast } from 'react-toastify';
+import { CloseIcon, Icon, SidebarContainer, SidebarMenu, SidebarLink, SidebarRoute, SidebarWrapper, SideBtnWrap } from './SidebarElements';
 
-const Sidebar = ({isOpen, toggle}) => {
+const Sidebar = ({ isOpen, toggle }) => {
+    const [isLoggedin,CheckState] = useState(localStorage.getItem('user') ? true : false);
+    function logout() {
+        if (isLoggedin) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('jwt');
+            CheckState(localStorage.getItem('user') ? true : false);
+            toast.info('Logged out successfully')
+        }
+    }
+    function nothing() {
+
+    }
     return (
         <SidebarContainer isOpen={isOpen} onClick={toggle}>
             <Icon onClick={toggle}>
                 <CloseIcon>
-                    
+
                 </CloseIcon>
             </Icon>
             <SidebarWrapper>
                 <SidebarMenu>
-                    <SidebarLink to="about" onClick={toggle}>
-                        Search Profile
-                    </SidebarLink>
+                    <SideBtnWrap>
+                        <SidebarRoute to="/searchprofile" onClick={toggle}>
+                            Search Profile
+                    </SidebarRoute>
+                    </SideBtnWrap>
 
-                      <SidebarLink to="work" onClick={toggle}>
-                        Premium Services
-                    </SidebarLink>
+                    <SideBtnWrap>
+                        <SidebarRoute to="/service" onClick={toggle}>
+                            Premium Services
+                    </SidebarRoute>
+                    </SideBtnWrap>
+                    <SideBtnWrap>
+                        <SidebarRoute to="/matchmake" onClick={toggle}>
+                            Matchmake
+                    </SidebarRoute>
+                    </SideBtnWrap>
+                    <SideBtnWrap>
+                        <SidebarRoute to="/contact" onClick={toggle}>
+                            Contact Us
+                    </SidebarRoute>
+                    </SideBtnWrap>
 
-                      <SidebarLink to="services" onClick={toggle}>
-                        Contact Us
-                    </SidebarLink>
+                    <SideBtnWrap>
+                        <SidebarRoute to="/chat" onClick={toggle}>
+                            Chat
+                    </SidebarRoute>
+                    </SideBtnWrap>
 
-                      <SidebarLink to="signup" onClick={toggle}>
-                        SignUp
-                    </SidebarLink>
 
                 </SidebarMenu>
-
                 <SideBtnWrap>
-                    <SidebarRoute to='/signin'>Sign In</SidebarRoute>
+                    <SidebarRoute to={isLoggedin ? '/' : '/signin'} onClick={isLoggedin ? logout : nothing}>{isLoggedin ? 'Sign out' : 'Sign In'}</SidebarRoute>
                 </SideBtnWrap>
 
             </SidebarWrapper>

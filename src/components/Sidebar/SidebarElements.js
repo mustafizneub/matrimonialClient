@@ -73,7 +73,7 @@ cursor: pointer;
 export const SideBtnWrap = styled.div`
 display: flex;
 justify-content: center;
-
+margin-bottom:5px;
 `
 
 export const SidebarRoute = styled(LinkR)`
@@ -88,6 +88,7 @@ border: none;
 cursor: pointer;
 transition: all 0.2s ease-in-out;
 text-decoration: none;
+width:100px
 
 &:hover{
     transition: all 0.2s ease-in-out;
