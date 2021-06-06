@@ -35,7 +35,7 @@ const ContactPage = () => {
           <fieldset>
             <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
           </fieldset>
-          <p class="copyright">Designed by <a href="#" target="_blank" title="Colorlib">RuleBreakers</a></p>
+          <p class="copyright">Designed by <a href="#" target="_blank" title="Colorlib">Dipraj</a></p>
         </form>
       </div>
     </div>
