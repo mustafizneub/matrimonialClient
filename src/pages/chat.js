@@ -13,7 +13,7 @@ let socket;
 const Chat = () => {
     let history = useHistory()
     const [userData, setUser] = useState({});
-    const [messages, getMessages] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [conversation, setconversation] = useState([]);
     const [text, setText] = useState('');
     const [message, setMessage] = useState('');
@@ -37,10 +37,10 @@ const Chat = () => {
 
         socket = io(ENDPOINT);
         console.log(socket)
-        socket.emit('pmessage', 'abc')
-        socket.on('message', (data) => {
-            console.log(data)
-        })
+        // socket.emit('pmessage', 'abc')
+        // socket.on('message', (data) => {
+        //     console.log(data)
+        // })
         return () => {
             socket.disconnect();
             socket.off();
@@ -57,14 +57,22 @@ const Chat = () => {
             setconversation([...conversation, ...data])
             console.log(conversation)
             setSelectedUser(data.length > 0 ? data[0] : {})
-            getMessages(data.length > 0 ? data[0].messages : [])
+            setMessages(data.length > 0 ? data[0].messages : [])
 
         })
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         socket.on('message', (data) => {
-            setMessage(...messages,data)
+            console.log(data);
+            let message;
+            console.log(userData, selectedUser)
+            // if(data.from == userData._id && data.to == selectedUser._id){
+            //     message = data.data
+            // }
+            setMessages([...messages, data.data])
+            console.log('updated message', messages)
+            // setMessages(message?[...messages,data]:messages)
         })
     })
 
@@ -101,9 +109,9 @@ const Chat = () => {
     //     console.log('conversation', conversation)
     // }
 
-    const sendMessage = (event,user) => {
+    const sendMessage = (event, user) => {
         event.preventDefault();
-        console.log(user,selectedUser)
+        console.log(user, selectedUser)
         axios.post('/create-conversation', {
             from: userData._id,
             to: selectedUser._id,
@@ -111,8 +119,9 @@ const Chat = () => {
                 text: message
             }
         }).then(res => {
-            socket.emit('pmessage', message)
-            setMessage(...messages, message)
+            console.log('after sending message', res.data.body)
+            socket.emit('pmessage', { data: res.data.body.messages[res.data.body.messages.length - 1], from: userData._id, to: selectedUser._id })
+            setMessages([...messages, res.data.body.messages[res.data.body.messages.length - 1]])
             // if (res.data.statusCode == 200 || res.data.statusCode == 201) {
             //     messages.push(message)
             // }
@@ -161,7 +170,7 @@ const Chat = () => {
                         <div>
                             <img src={two} alt="" width="50px" height="50px" />
                         </div>
-                        <div onClick={e => setSelectedUser(data)} className="chat-text">
+                        <div onClick={e => { setSelectedUser(data); setMessages(data.messages ? data.messages : messages) }} className="chat-text">
                             <h3>{data.fname}</h3>
                             {data.messages?.length > 0 &&
                                 <p>{data.messages[data.messages.length - 1].text}</p>
@@ -205,9 +214,12 @@ const Chat = () => {
             </div>
             <div className="chat">
                 {messages.map((data, index) => (
-                    <div className="{(data.userID == userData._id)?'self-content-right':'self-content-left'}">
-                        <img src={three} alt="" width="50px" height="50px" />
-                        <p>{data.text}</p>
+                    <div className={(data.userID == userData._id) ? 'self-content-right' : 'self-content-left'}>
+                        <div className="content">
+                            <p>{data.text}</p>
+                            <img src={one} alt="" width="50px" height="50px" />
+                        </div>
+
                     </div>
                 ))}
 
