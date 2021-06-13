@@ -17,7 +17,7 @@ const Chat = () => {
     const [conversation, setconversation] = useState([]);
     const [text, setText] = useState('');
     const [message, setMessage] = useState('');
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState({});
     const ENDPOINT = 'localhost:3000';
     if (localStorage.getItem('user') == undefined) {
         history.push('/signin');
@@ -37,10 +37,6 @@ const Chat = () => {
 
         socket = io(ENDPOINT);
         console.log(socket)
-        // socket.emit('pmessage', 'abc')
-        // socket.on('message', (data) => {
-        //     console.log(data)
-        // })
         return () => {
             socket.disconnect();
             socket.off();
@@ -65,66 +61,62 @@ const Chat = () => {
     useEffect(() => {
         socket.on('message', (data) => {
             console.log(data);
-            let message;
+            let message, self;
             console.log(userData, selectedUser)
-            // if(data.from == userData._id && data.to == selectedUser._id){
-            //     message = data.data
-            // }
-            setMessages([...messages, data.data])
-            console.log('updated message', messages)
-            // setMessages(message?[...messages,data]:messages)
+            if (selectedUser && data.from == selectedUser.userID) {
+                message = data.data;
+            }
+            else if (data.to == userData._id) {
+                self = true;
+            }
+            setMessages(message ? [...messages, message] : messages);
+            setconversation((message || self) ? [...conversation.filter(item => (item._id != data.conversation._id) && item.messages), data.conversation] : conversation);
+            setSelectedUser(conversation[0]);
+            console.log('updated message', messages, conversation)
         })
     })
 
-    const userSerach = () => {
-        // let a = [{ 's': 'd' }];
-        // setconversation([...conversation, "...a"])
+    const userSearch = () => {
         let data = [];
-        // setconversation([...conversation,"...a"])
         fetch(`/search?text=${text}`).then(res => res.json()).then(res => {
+            if(res.body.length == 0){
+                toast.info('No User Found', {
+                    position: toast.POSITION.TOP_CENTER
+                })
+            }
             console.log('res', res.body, typeof (res.body), res.body.length)
             data = res;
             console.log('data', data)
-            // data.concat(res.data.body)
-            console.log('after', data)
-            // setConversation(data)
-            // console.log('data', data)
             setconversation([...conversation, ...data.body]);
-            // getconversation([...conversation,'res.data.body[0]'])
-            // conversation.concat(res.data.body)
             console.log('conversation', conversation, selectedUser, messages)
         })
-
-        // console.log(conversation)
     }
 
     useEffect(() => {
-        userSerach()
+        userSearch()
     }, [])
-
-    // function setConversation(data) {
-    //     setconversation([...data])
-    //     // getconversation([...conversation,'res.data.body[0]'])
-    //     // conversation.concat(res.data.body)
-    //     console.log('conversation', conversation)
-    // }
 
     const sendMessage = (event, user) => {
         event.preventDefault();
         console.log(user, selectedUser)
         axios.post('/create-conversation', {
             from: userData._id,
-            to: selectedUser._id,
+            to: selectedUser.userID,
             messages: {
                 text: message
             }
         }).then(res => {
             console.log('after sending message', res.data.body)
-            socket.emit('pmessage', { data: res.data.body.messages[res.data.body.messages.length - 1], from: userData._id, to: selectedUser._id })
+            socket.emit('pmessage', { data: res.data.body.messages[res.data.body.messages.length - 1], from: userData._id, to: selectedUser.userID, conversation: res.data.body })
             setMessages([...messages, res.data.body.messages[res.data.body.messages.length - 1]])
-            // if (res.data.statusCode == 200 || res.data.statusCode == 201) {
-            //     messages.push(message)
-            // }
+            let data = {
+                fname:selectedUser.fname,
+                lname:selectedUser.lname,
+                userID:selectedUser.userID,
+                mobile:selectedUser.mobile,
+                email:selectedUser.email
+            }
+            setconversation([...conversation.filter(item => (item._id != res.data.body._id) && (item.messages)), Object.assign(res.data.body, data)]);
         }).catch(err => {
 
         })
@@ -164,9 +156,9 @@ const Chat = () => {
 
             </div>
             <div className="side-bar">
-                <input type="text" name="search" onChange={e => setText(e.target.value)} onKeyPress={e => e.key === 'Enter' ? userSerach() : null} value={text} />
-                {conversation.map((data, index) => (
-                    <div className="chat-self">
+                <input type="text" name="search" onChange={e => setText(e.target.value)} onKeyPress={e => e.key === 'Enter' ? userSearch() : null} value={text} />
+                {conversation.map((data, i) => (
+                    <div className="chat-self" key={i}>
                         <div>
                             <img src={two} alt="" width="50px" height="50px" />
                         </div>
@@ -213,8 +205,8 @@ const Chat = () => {
 
             </div>
             <div className="chat">
-                {messages.map((data, index) => (
-                    <div className={(data.userID == userData._id) ? 'self-content-right' : 'self-content-left'}>
+                {messages.map((data, i) => (
+                    <div key={i} className={(data.userID == userData._id) ? 'self-content-right' : 'self-content-left'}>
                         <div className="content">
                             <p>{data.text}</p>
                             <img src={one} alt="" width="50px" height="50px" />

@@ -70,6 +70,7 @@
   border-radius: 50px;
 }
 .chat-self {
+  cursor: pointer;
   display: flex;
   margin: 10px 5%;
 }
